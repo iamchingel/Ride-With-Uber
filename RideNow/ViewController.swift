@@ -7,19 +7,50 @@
 //
 
 import UIKit
+import UberRides
+import CoreLocation
+
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+        let button = RideRequestButton()
+        view.addSubview(button)
+        button.center = view.center
+        let ridesClient = RidesClient()
+        let dropOffLocation = CLLocation(latitude: 20.301647, longitude: 85.819135)
+        let pickUpLocation = CLLocation(latitude : 20.323706, longitude: 85.814981)
+        let builder = RideParametersBuilder()
+        
 
+        var productID = ""
+        ridesClient.fetchProducts(pickupLocation: pickUpLocation) { (product, response) in
+            productID = product[1].productID
+            print("🥒\(productID)")
+        }
+    
+        ridesClient.fetchPriceEstimates(pickupLocation: pickUpLocation, dropoffLocation: dropOffLocation) { (price, response) in
+            
+            print(price[0].estimate!,"🍚")
+        
+        }
+        
+        ridesClient.fetchTimeEstimates(pickupLocation: pickUpLocation) { (time, response) in
+            print("🥕",time[0].estimate,"🥕")
+        }
+        
+        builder.pickupLocation = pickUpLocation
+        builder.pickupNickname = "Home"
+        builder.dropoffLocation = dropOffLocation
+        builder.dropoffNickname = "Mayfair Lagoon, Bhubaneswar"
+        builder.productID = productID
+        
+        button.setContent()
+        button.rideParameters = builder.build()
+        button.loadRideInformation()
+    }
 
 }
 
