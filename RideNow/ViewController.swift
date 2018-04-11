@@ -18,6 +18,7 @@ class ViewController: UIViewController {
 
         let button = RideRequestButton()
         view.addSubview(button)
+        
         button.center = view.center
         let ridesClient = RidesClient()
         let dropOffLocation = CLLocation(latitude: 20.301647, longitude: 85.819135)
@@ -34,7 +35,7 @@ class ViewController: UIViewController {
             print("🥒\(productID)")
         }
 
-        
+
         ridesClient.fetchPriceEstimates(pickupLocation: pickUpLocation, dropoffLocation: dropOffLocation) { (price, response) in
 
             print(price[0].estimate!,"🍚")
@@ -43,6 +44,12 @@ class ViewController: UIViewController {
         ridesClient.fetchTimeEstimates(pickupLocation: pickUpLocation) { (time, response) in
             print("🥕",time[0].estimate,"🥕")
         }
+        
+        ridesClient.fetchRideRequestEstimate(parameters: builder.build()) { (rideEstimate, response) in
+            builder.upfrontFare = rideEstimate?.fare
+            print(rideEstimate,"🥗")
+        }
+        
 
 
         builder.productID = productID
